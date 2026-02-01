@@ -1,11 +1,15 @@
 FROM golang:1.22-alpine
 
-WORKDIR /app
+COPY main /main
 
-COPY main /app/main
+ENV POSTGRES_USERNAME
+ENV POSTGRES_DATABASE
+ENV POSTGRES_PASSWORD
+ENV POSTGRES_PORT
+ENV POSTGRES_HOST
 
 RUN chmod +x /app/main
 
 EXPOSE 8080
 
-CMD ["./main"]
+ENTRYPOINT ["/main"]
