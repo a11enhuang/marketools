@@ -1,6 +1,6 @@
-FROM golang:1.22-alpine
+FROM centos:8
 
-COPY main /main
+COPY ./app /home/app
 
 ENV POSTGRES_USERNAME=postgres \ 
     POSTGRES_DATABASE=stock \
@@ -10,6 +10,6 @@ ENV POSTGRES_USERNAME=postgres \
 
 EXPOSE 8080
 
-WORKDIR /app
+WORKDIR /home
 
-ENTRYPOINT ["./main"]
+ENTRYPOINT ["./app"]
