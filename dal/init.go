@@ -2,10 +2,12 @@ package dal
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"log"
 	"time"
 
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -16,6 +18,13 @@ var sqlDB *gorm.DB
 func init() {
 	viper.SetDefault("POSTGRES_USERNAME", "postgres")
 	viper.SetDefault("POSTGRES_DATABASE", "stock")
+
+	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
+	pflag.Parse()
+	if err := viper.BindPFlags(pflag.CommandLine); err != nil {
+		panic(err)
+	}
+	viper.SetConfigType("yaml")
 
 	host := viper.GetString("POSTGRES_HOST")
 	username := viper.GetString("POSTGRES_USERNAME")
