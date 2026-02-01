@@ -81,8 +81,7 @@ func buyStocks() {
 	}
 }
 
-func syncData(now time.Time) {
-	version := now.Format("20060102")
+func syncData(_ time.Time) {
 	pageNum := 1
 	for {
 		requestUrl := fmt.Sprintf("https://proxy.finance.qq.com/cgi/cgi-bin/rank/hs/getBoardRankList?_appver=11.17.0&board_code=aStock&sort_type=price&direct=down&count=200&offset=%d", (pageNum-1)*200)
@@ -109,7 +108,7 @@ func syncData(now time.Time) {
 		}
 
 		for _, item := range rankList {
-			item.Version = version
+			item.Version = "2026"
 			item.Upsert()
 		}
 
