@@ -51,7 +51,7 @@ func (this *StockPrice) Upsert() {
 
 func SelectBuyStocks() []StockPrice {
 	entries, err := gorm.G[StockPrice](sqlDB).
-		Where("lb between 1.5 and 4.5 and zsz between 50 and 300 and pe_ttm < 90 and zdf between 6 and 13  order by  id asc, zdf DESC").
+		Where("lb between 1.5 and 4.5 and zsz between 50 and 300 and pe_ttm < 90 and zdf between 6 and 13 LIMIT 30 order by  zsz DESC, zdf DESC").
 		Find(context.TODO())
 	if err != nil {
 		log.Println("查询买盘失败.error=", err.Error())
