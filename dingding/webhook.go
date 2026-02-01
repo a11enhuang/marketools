@@ -3,6 +3,7 @@ package dingding
 import (
 	"context"
 	"crypto/tls"
+	"log"
 
 	"github.com/bytedance/sonic"
 	"github.com/cloudwego/hertz/pkg/app/client"
@@ -35,9 +36,11 @@ func Send(content string) {
 	}
 
 	url := viper.GetString("WEBHOOK_DINGDING")
+	log.Println("[钉钉]准备发送webhook推送.url=", url)
 
 	buff, err := sonic.Marshal(msg)
 	if err != nil {
+		log.Println("[钉钉]序列化参数出错.err=", err.Error())
 		return
 	}
 
@@ -46,5 +49,8 @@ func Send(content string) {
 	req.SetMethod("POST")
 	req.SetRequestURI(url)
 
-	_ = httpClient.Do(context.Background(), req, res)
+	err = httpClient.Do(context.Background(), req, res)
+	if err != nil {
+		log.Println("[钉钉]发送webhook请求出错.err=", err.Error())
+	}
 }
