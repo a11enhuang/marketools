@@ -85,6 +85,7 @@ func initTable() {
 		timestamp TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 	);
 	CREATE UNIQUE INDEX IF NOT EXISTS udx_stock_prices ON stock_prices(code, version);
+	CREATE INDEX IF NOT EXISTS idx_stock_price_code ON stock_prices (code, timestamp DESC);
 	`
 	result := gorm.WithResult()
 	err := gorm.G[any](sqlDB, result).Exec(context.Background(), tableStockPrice)

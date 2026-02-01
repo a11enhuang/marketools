@@ -60,7 +60,7 @@ func buyStocks() {
 		builder := strings.Builder{}
 		builder.WriteString("# ")
 		builder.WriteString(title)
-		builder.WriteString(" 买入股票推荐 \n")
+		builder.WriteString(" 评级买入股票 \n")
 
 		for i := range entries {
 			entry := entries[i]
@@ -75,6 +75,8 @@ func buyStocks() {
 			builder.WriteString(entry.Zdf.String())
 			builder.WriteString(",换手率:")
 			builder.WriteString(entry.Hsl.String())
+			builder.WriteString(",量比:")
+			builder.WriteString(entry.Lb.String())
 			builder.WriteString(" \n")
 		}
 
@@ -82,7 +84,8 @@ func buyStocks() {
 	}
 }
 
-func syncData(_ time.Time) {
+func syncData(now time.Time) {
+	version := now.Format("20060102")
 	pageNum := 1
 	for {
 		requestUrl := fmt.Sprintf("https://proxy.finance.qq.com/cgi/cgi-bin/rank/hs/getBoardRankList?_appver=11.17.0&board_code=aStock&sort_type=price&direct=down&count=200&offset=%d", (pageNum-1)*200)
@@ -109,7 +112,7 @@ func syncData(_ time.Time) {
 		}
 
 		for _, item := range rankList {
-			item.Version = "2026"
+			item.Version = version
 			item.Upsert()
 		}
 

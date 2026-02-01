@@ -14,9 +14,9 @@ type StockPrice struct {
 	Id        uint64          `json:"id" gorm:"primaryKey;column:id"`
 	Code      string          `json:"code" gorm:"column:code"`
 	Name      string          `json:"name" gorm:"column:name"`         //名字
-	Hsl       decimal.Decimal `json:"hsl" gorm:"column:"`              //换手率
-	Lb        decimal.Decimal `json:"lb" gorm:"column:"`               //量比
-	Ltsz      decimal.Decimal `json:"ltsz" gorm:"column:"`             //流通市值
+	Hsl       decimal.Decimal `json:"hsl" gorm:"column:hsl"`           //换手率
+	Lb        decimal.Decimal `json:"lb" gorm:"column:lb"`             //量比
+	Ltsz      decimal.Decimal `json:"ltsz" gorm:"column:ltsz"`         //流通市值
 	PeTtm     decimal.Decimal `json:"pe_ttm" gorm:"column:pe_ttm"`     //市盈率
 	Pn        decimal.Decimal `json:"pn" gorm:"column:pn"`             //市净率
 	Speed     decimal.Decimal `json:"speed" gorm:"column:speed"`       //
@@ -50,9 +50,21 @@ func (this *StockPrice) Upsert() {
 }
 
 func SelectBuyStocks() []StockPrice {
-	entries, err := gorm.G[StockPrice](sqlDB).
-		Where("lb between 1.5 and 4.5 and zsz between 50 and 300 and pe_ttm < 90 and zdf between 6 and 13 order by  zsz DESC, zdf DESC").
-		Find(context.TODO())
+	entries, err := gorm.G[StockPrice](sqlDB).Raw(`
+	SELECT *
+	FROM (
+		SELECT DISTINCT ON (code) *
+		FROM stock_prices
+		ORDER BY code, timestamp DESC
+	) t
+	WHERE 
+		lb BETWEEN 1.5 AND 4.5
+		AND hsl BETWEEN 6 AND 13
+		AND zsz BETWEEN 50 AND 300
+		AND pe_ttm < 90
+	ORDER BY zdf DESC
+	LIMIT 50;
+	`).Find(context.TODO())
 	if err != nil {
 		log.Println("查询买盘失败.error=", err.Error())
 		return nil
