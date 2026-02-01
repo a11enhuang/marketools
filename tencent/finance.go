@@ -63,7 +63,7 @@ func init() {
 }
 
 func syncData(now time.Time) {
-	version := now.Add(8 * time.Hour).Format("20060102")
+	version := now.Format("20060102")
 	pageNum := 1
 	for {
 		requestUrl := fmt.Sprintf("https://proxy.finance.qq.com/cgi/cgi-bin/rank/hs/getBoardRankList?_appver=11.17.0&board_code=aStock&sort_type=price&direct=down&count=200&offset=%d", (pageNum-1)*200)
@@ -96,8 +96,10 @@ func syncData(now time.Time) {
 
 		if len(rankList) < 200 {
 			log.Println("已经是最后一页了.pageNum=", pageNum)
+			break
 		}
 		pageNum = pageNum + 1
+		time.Sleep(5000)
 	}
 
 }
