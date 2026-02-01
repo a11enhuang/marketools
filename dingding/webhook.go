@@ -29,7 +29,7 @@ func init() {
 func Send(content string) {
 	msg := map[string]any{
 		"msgtype": "markdown",
-		"markdown": map[string]any{
+		"markdown": map[string]string{
 			"title": "2026 买入股票推荐",
 			"text":  content,
 		},
@@ -43,6 +43,8 @@ func Send(content string) {
 		log.Println("[钉钉]序列化参数出错.err=", err.Error())
 		return
 	}
+
+	log.Println("[钉钉]发送参数:", string(buff))
 
 	req, res := &protocol.Request{}, &protocol.Response{}
 	req.SetBody(buff)
