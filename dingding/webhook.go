@@ -52,5 +52,7 @@ func Send(content string) {
 	err = httpClient.Do(context.Background(), req, res)
 	if err != nil {
 		log.Println("[钉钉]发送webhook请求出错.err=", err.Error())
+	} else {
+		log.Println("[钉钉]发送结果:", res.Body())
 	}
 }
