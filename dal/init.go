@@ -25,6 +25,7 @@ func init() {
 		panic(err)
 	}
 	viper.SetConfigType("yaml")
+	viper.AutomaticEnv()
 
 	host := viper.GetString("POSTGRES_HOST")
 	username := viper.GetString("POSTGRES_USERNAME")
