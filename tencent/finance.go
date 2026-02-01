@@ -113,6 +113,7 @@ func syncData(now time.Time) {
 
 		for _, item := range rankList {
 			item.Version = version
+			item.Timestamp = now
 			item.Upsert()
 		}
 
