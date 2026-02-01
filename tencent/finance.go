@@ -58,23 +58,24 @@ func buyStocks() {
 	entries := dal.SelectBuyStocks()
 	if len(entries) > 0 {
 		builder := strings.Builder{}
-		builder.WriteRune('#')
+		builder.WriteString("# ")
 		builder.WriteString(title)
-		builder.WriteString(" 买入股票推荐")
-		builder.WriteRune('\n')
+		builder.WriteString(" 买入股票推荐 \n")
 
 		for i := range entries {
 			entry := entries[i]
-			builder.WriteRune('-')
+			builder.WriteString(" - ")
 			builder.WriteString(entry.Name)
 			builder.WriteRune('(')
 			builder.WriteString(entry.Code)
 			builder.WriteRune(')')
+			builder.WriteString("最新价:")
+			builder.WriteString(entry.Price.String())
 			builder.WriteString("涨跌幅:")
 			builder.WriteString(entry.Zdf.String())
 			builder.WriteString(",换手率:")
 			builder.WriteString(entry.Hsl.String())
-			builder.WriteRune('\n')
+			builder.WriteString(" \n")
 		}
 
 		dingding.Send(builder.String())

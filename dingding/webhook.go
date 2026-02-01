@@ -50,6 +50,7 @@ func Send(content string) {
 	req.SetBody(buff)
 	req.SetMethod("POST")
 	req.SetRequestURI(url)
+	req.SetHeader("Content-Type", "application/json")
 
 	err = httpClient.Do(context.Background(), req, res)
 	if err != nil {
