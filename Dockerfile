@@ -10,4 +10,6 @@ ENV POSTGRES_USERNAME=postgres \
 
 EXPOSE 8080
 
-ENTRYPOINT ["main"]
+WORKDIR /app
+
+ENTRYPOINT ["./main"]
