@@ -5,48 +5,16 @@ import (
 	"crypto/tls"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"com.reopenai/marketool/dal"
+	"com.reopenai/marketool/dingding"
 	"github.com/bytedance/sonic"
 	"github.com/cloudwego/hertz/pkg/app/client"
 	"github.com/cloudwego/hertz/pkg/network/standard"
+	"github.com/robfig/cron/v3"
 )
-
-func Run() {
-	syncData(time.Now())
-
-	ticker := time.NewTicker(10 * time.Minute)
-	defer ticker.Stop()
-	for {
-		now := time.Now()
-		if isWeekday(now) {
-			triggerSyncData(now)
-		}
-		<-ticker.C
-	}
-}
-
-func isWeekday(t time.Time) bool {
-	return t.Weekday() < time.Monday || t.Weekday() > time.Friday
-}
-
-func triggerSyncData(t time.Time) {
-	h, m := t.Hour(), t.Minute()
-	if h < 9 || h > 15 {
-		return
-	}
-	if h == 9 && m < 15 {
-		return
-	}
-	if h == 15 && m > 0 {
-		return
-	}
-	if (h > 11 && m > 30) && h < 13 {
-		return
-	}
-	syncData(t)
-}
 
 var httpClient *client.Client
 
@@ -60,6 +28,57 @@ func init() {
 		client.WithDialer(standard.NewDialer()),
 	)
 	httpClient = c
+}
+
+func Run() {
+	syncData(time.Now())
+	buyStocks()
+	c := cron.New(cron.WithSeconds())
+
+	task := func() {
+		syncData(time.Now())
+	}
+
+	c.AddFunc("30,45 9 * * 1-5", task)
+	c.AddFunc("0,15,30,45 10 * * 1-5", task)
+	c.AddFunc("0,15,30 11 * * 1-5", task)
+
+	c.AddFunc("0,15,30,45 13 * * 1-5", task)
+	c.AddFunc("0,15,30,45 14 * * 1-5", task)
+	c.AddFunc("0 15 15 * * 1-5", task)
+
+	c.AddFunc("0 0 9 * * 1-5", buyStocks)
+	c.AddFunc("0 30 14 * * 1-5", buyStocks)
+
+	c.Start()
+}
+
+func buyStocks() {
+	title := time.Now().Format("2006-01-02")
+	entries := dal.SelectBuyStocks()
+	if len(entries) > 0 {
+		builder := strings.Builder{}
+		builder.WriteRune('#')
+		builder.WriteString(title)
+		builder.WriteString(" 买入股票推荐")
+		builder.WriteRune('\n')
+
+		for i := range entries {
+			entry := entries[i]
+			builder.WriteRune('-')
+			builder.WriteString(entry.Name)
+			builder.WriteRune('(')
+			builder.WriteString(entry.Code)
+			builder.WriteRune(')')
+			builder.WriteString("涨跌幅:")
+			builder.WriteString(entry.Zdf.String())
+			builder.WriteString(",换手率:")
+			builder.WriteString(entry.Hsl.String())
+			builder.WriteRune('\n')
+		}
+
+		dingding.Send(builder.String())
+	}
 }
 
 func syncData(now time.Time) {
