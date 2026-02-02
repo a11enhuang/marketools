@@ -32,7 +32,6 @@ func init() {
 
 func Run() {
 	syncData(time.Now())
-	buyStocks()
 	c := cron.New(cron.WithSeconds())
 
 	task := func() {
@@ -47,8 +46,9 @@ func Run() {
 	c.AddFunc("0,15,30,45 14 * * 1-5", task)
 	c.AddFunc("0 15 15 * * 1-5", task)
 
-	c.AddFunc("0 0 9 * * 1-5", buyStocks)
-	c.AddFunc("0 30 14 * * 1-5", buyStocks)
+	c.AddFunc("30 9 * * 1-5", buyStocks)
+	c.AddFunc("30 11 * * 1-5", buyStocks)
+	c.AddFunc("30 14 * * 1-5", buyStocks)
 
 	c.Start()
 }
@@ -113,7 +113,6 @@ func syncData(now time.Time) {
 
 		for _, item := range rankList {
 			item.Version = version
-			item.Timestamp = now
 			item.Upsert()
 		}
 
@@ -122,7 +121,7 @@ func syncData(now time.Time) {
 			break
 		}
 		pageNum = pageNum + 1
-		time.Sleep(5000)
+		time.Sleep(5 * time.Second)
 	}
 
 }
