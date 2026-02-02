@@ -32,6 +32,7 @@ func init() {
 
 func Run() {
 	syncData(time.Now())
+	buyStocks()
 	c := cron.New(cron.WithSeconds())
 
 	task := func() {

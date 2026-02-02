@@ -43,7 +43,7 @@ type StockPrice struct {
 func (this *StockPrice) Upsert() {
 	sqlDB.Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "code"}, {Name: "version"}},
-		DoNothing: true,
+		UpdateAll: true,
 	}).Create(this)
 }
 
