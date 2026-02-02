@@ -38,7 +38,7 @@ func Run() {
 		syncData(time.Now())
 	}
 
-	c.AddFunc("30,45 9 * * 1-5", task)
+	c.AddFunc("15,30,45 9 * * 1-5", task)
 	c.AddFunc("0,15,30,45 10 * * 1-5", task)
 	c.AddFunc("0,15,30 11 * * 1-5", task)
 
