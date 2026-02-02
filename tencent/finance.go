@@ -30,9 +30,8 @@ func init() {
 	httpClient = c
 }
 
-func Run() {
+func Run(ctx context.Context) {
 	syncData(time.Now())
-	buyStocks()
 	c := cron.New(cron.WithSeconds())
 
 	task := func() {
@@ -52,6 +51,9 @@ func Run() {
 	c.AddFunc("30 14 * * 1-5", buyStocks)
 
 	c.Start()
+
+	<-ctx.Done()
+	c.Stop()
 }
 
 func buyStocks() {
