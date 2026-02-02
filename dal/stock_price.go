@@ -53,7 +53,7 @@ func SelectBuyStocks() []StockPrice {
 	FROM (
 		SELECT DISTINCT ON (code) *
 		FROM stock_prices
-		ORDER BY code, timestamp DESC
+		ORDER BY code, version DESC
 	) t
 	WHERE 
 		lb BETWEEN 1.5 AND 4.5
