@@ -46,8 +46,9 @@ func Run(ctx context.Context) {
 	c.AddFunc("0,15,30,45 14 * * 1-5", task)
 	c.AddFunc("0 15 15 * * 1-5", task)
 
+	c.AddFunc("45 8 * * 1-5", buyStocks)
 	c.AddFunc("30 9 * * 1-5", buyStocks)
-	c.AddFunc("30 11 * * 1-5", buyStocks)
+	c.AddFunc("45 11 * * 1-5", buyStocks)
 	c.AddFunc("30 14 * * 1-5", buyStocks)
 
 	c.Start()
