@@ -13,7 +13,7 @@ import (
 	"github.com/bytedance/sonic"
 	"github.com/cloudwego/hertz/pkg/app/client"
 	"github.com/cloudwego/hertz/pkg/network/standard"
-	"github.com/robfig/cron/v3"
+	"github.com/go-co-op/gocron"
 )
 
 var httpClient *client.Client
@@ -31,32 +31,40 @@ func init() {
 }
 
 func Run(ctx context.Context) {
-	syncData(time.Now())
-	c := cron.New(cron.WithSeconds())
+	go syncData(time.Now())
+
+	s := gocron.NewScheduler(time.Local)
 
 	task := func() {
 		syncData(time.Now())
 	}
 
-	c.AddFunc("15,30,45 9 * * 1-5", task)
-	c.AddFunc("0,15,30,45 10 * * 1-5", task)
-	c.AddFunc("0,15,30 11 * * 1-5", task)
+	runTask(s, "09:20", task)
+	runTask(s, "10:00", task)
+	runTask(s, "11:00", task)
+	runTask(s, "11:30", task)
+	runTask(s, "13:30", task)
+	runTask(s, "14:00", task)
+	runTask(s, "14:10", task)
+	runTask(s, "14:30", task)
+	runTask(s, "14:40", task)
+	runTask(s, "15:10", task)
 
-	c.AddFunc("0,15,30,45 13 * * 1-5", task)
-	c.AddFunc("0,15,30,45 14 * * 1-5", task)
-	c.AddFunc("0 15 15 * * 1-5", task)
+	runTask(s, "09:10", buyStocks)
+	runTask(s, "09:30", buyStocks)
+	runTask(s, "11:45", buyStocks)
+	runTask(s, "14:15", buyStocks)
+	runTask(s, "14:45", buyStocks)
 
-	c.AddFunc("45 8 * * 1-5", buyStocks)
-	c.AddFunc("30 9 * * 1-5", buyStocks)
-	c.AddFunc("45 11 * * 1-5", buyStocks)
-	c.AddFunc("30 14 * * 1-5", buyStocks)
-
-	c.Start()
-	log.Println("已开始执行任务")
-
-	<-ctx.Done()
-	c.Stop()
+	s.StartAsync()
 	log.Println("任务已执行完毕")
+}
+
+func runTask(s *gocron.Scheduler, time string, job any) {
+	s.Every(1).
+		Monday().Tuesday().Wednesday().Thursday().Friday().
+		At(time).
+		Do(job)
 }
 
 func buyStocks() {
