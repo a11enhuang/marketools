@@ -50,13 +50,14 @@ func Run(ctx context.Context) {
 	runTask(s, "14:40", task)
 	runTask(s, "15:10", task)
 
-	runTask(s, "09:10", buyStocks)
+	runTask(s, "09:13", buyStocks)
 	runTask(s, "09:30", buyStocks)
 	runTask(s, "11:45", buyStocks)
 	runTask(s, "14:15", buyStocks)
 	runTask(s, "14:45", buyStocks)
 
 	s.StartAsync()
+	<-ctx.Done()
 	log.Println("任务已执行完毕")
 }
 
