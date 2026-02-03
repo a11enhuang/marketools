@@ -40,20 +40,23 @@ func Run(ctx context.Context) {
 	}
 
 	runTask(s, "09:20", task)
-	runTask(s, "10:00", task)
+	runTask(s, "09:50", task)
 	runTask(s, "11:00", task)
 	runTask(s, "11:30", task)
+	runTask(s, "13:10", task)
 	runTask(s, "13:30", task)
 	runTask(s, "14:00", task)
-	runTask(s, "14:10", task)
-	runTask(s, "14:30", task)
+	runTask(s, "14:20", task)
+	runTask(s, "14:35", task)
 	runTask(s, "14:40", task)
 	runTask(s, "15:10", task)
 
-	runTask(s, "09:13", buyStocks)
+	runTask(s, "09:00", buyStocks)
 	runTask(s, "09:30", buyStocks)
+	runTask(s, "10:00", buyStocks)
 	runTask(s, "11:45", buyStocks)
-	runTask(s, "14:15", buyStocks)
+	runTask(s, "13:20", buyStocks)
+	runTask(s, "14:30", buyStocks)
 	runTask(s, "14:45", buyStocks)
 
 	s.StartAsync()
