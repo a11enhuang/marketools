@@ -52,9 +52,11 @@ func Run(ctx context.Context) {
 	c.AddFunc("30 14 * * 1-5", buyStocks)
 
 	c.Start()
+	log.Println("已开始执行任务")
 
 	<-ctx.Done()
 	c.Stop()
+	log.Println("任务已执行完毕")
 }
 
 func buyStocks() {
@@ -85,6 +87,8 @@ func buyStocks() {
 		}
 
 		dingding.Send(builder.String())
+	} else {
+		log.Println("未匹配到任何建议买入的股票")
 	}
 }
 
