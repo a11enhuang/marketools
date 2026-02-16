@@ -2,13 +2,11 @@ package dal
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"log"
 	"time"
 
-	"github.com/spf13/pflag"
-	"github.com/spf13/viper"
+	"com.reopenai/marketool/appctx"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -16,24 +14,21 @@ import (
 var sqlDB *gorm.DB
 
 func init() {
-	viper.SetDefault("POSTGRES_USERNAME", "postgres")
-	viper.SetDefault("POSTGRES_DATABASE", "stock")
+	appctx.GetEnv().
+		SetDefault("POSTGRES_PORT", "5432").
+		SetDefault("POSTGRES_DATABASE", "stock").
+		SetDefault("POSTGRES_HOST", "127.0.0.1").
+		SetDefault("POSTGRES_USERNAME", "postgres").
+		SetDefault("POSTGRES_PASSWORD", "postgres")
 
-	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
-	pflag.Parse()
-	if err := viper.BindPFlags(pflag.CommandLine); err != nil {
-		panic(err)
-	}
-	viper.SetConfigType("yaml")
-	viper.AutomaticEnv()
+	host := appctx.GetEnv().GetString("POSTGRES_HOST")
+	username := appctx.GetEnv().GetString("POSTGRES_USERNAME")
+	password := appctx.GetEnv().GetString("POSTGRES_PASSWORD")
+	dbname := appctx.GetEnv().GetString("POSTGRES_DATABASE")
+	port := appctx.GetEnv().GetString("POSTGRES_PORT")
 
-	host := viper.GetString("POSTGRES_HOST")
-	username := viper.GetString("POSTGRES_USERNAME")
-	password := viper.GetString("POSTGRES_PASSWORD")
-	dbname := viper.GetString("POSTGRES_DATABASE")
-	port := viper.GetString("POSTGRES_PORT")
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Shanghai", host, username, password, dbname, port)
-	log.Println("正在连接数据库: ", dsn)
+	log.Println("[Application]正在连接数据库: ", dsn)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)

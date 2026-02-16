@@ -3,6 +3,7 @@ package dal
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
@@ -47,6 +48,16 @@ func (this *StockPrice) Upsert() {
 	}).Create(this)
 }
 
+func SelectAll() []StockPrice {
+	version := time.Now().Add(-24 * time.Hour).Format("20060102")
+	entries, err := gorm.G[StockPrice](sqlDB).Where("version = ?", version).Find(context.TODO())
+	if err != nil {
+		log.Println("查询买盘失败.error=", err.Error())
+		return nil
+	}
+	return entries
+}
+
 func SelectBuyStocks() []StockPrice {
 	entries, err := gorm.G[StockPrice](sqlDB).Raw(`
 	SELECT *
@@ -60,7 +71,7 @@ func SelectBuyStocks() []StockPrice {
 		AND hsl BETWEEN 6 AND 13
 		AND zsz BETWEEN 50 AND 300
 		AND pe_ttm < 90
-		AND zdf > 0
+		AND zdf BETWEEN 3 AND 5.9
 	ORDER BY zdf DESC
 	LIMIT 50;
 	`).Find(context.TODO())
