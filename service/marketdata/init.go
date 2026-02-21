@@ -24,4 +24,5 @@ func init() {
 
 func AsyncStart(ctx context.Context) {
 	startSyncLastPrice()
+	go registerBuyStocks(ctx)
 }

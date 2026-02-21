@@ -11,14 +11,12 @@ import (
 	"com.reopenai/marketool/service/dingding"
 )
 
-func Run(ctx context.Context) {
+func registerBuyStocks(ctx context.Context) {
 	schedules.AddWeekdaysTask("09:00", buyStocks)
 	schedules.AddWeekdaysTask("09:30", buyStocks)
-	schedules.AddWeekdaysTask("10:00", buyStocks)
 	schedules.AddWeekdaysTask("11:45", buyStocks)
 	schedules.AddWeekdaysTask("13:20", buyStocks)
 	schedules.AddWeekdaysTask("14:30", buyStocks)
-	schedules.AddWeekdaysTask("14:45", buyStocks)
 }
 
 func buyStocks() {
